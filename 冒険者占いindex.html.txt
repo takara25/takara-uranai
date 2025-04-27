@@ -1,0 +1,130 @@
+<!-- SNSシェア＋スクショ保存ボタン組み込み版 -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>冒険者占い ~運命の職業診断~</title>
+  <style>
+    /* --- スタイルは省略（今まで通り） --- */
+  </style>
+</head>
+<body>
+  <h1>博光者占い<br>~運命の職業診断~</h1>
+
+  <div id="ad-before" class="ad-container">
+    <p>ここに広告が入ります</p>
+  </div>
+
+  <div class="input-section" id="input-section">
+    <p>生まれた日を入力してください！</p>
+    <input type="number" placeholder="西暦 (例:1983)" id="year">
+    <input type="number" placeholder="月 (例:6)" id="month">
+    <input type="number" placeholder="日 (例:25)" id="day">
+    <br>
+    <button onclick="startFortune()">運命を知る</button>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>運命の職業を探索中...</p>
+  </div>
+
+  <div id="result-card">
+    <h2 id="job-name">職業名</h2>
+    <p id="job-description">ここに職業説明が入ります。</p>
+    <p id="job-voice"></p>
+    <div id="ad-after" class="ad-container">
+      <p>ここに診断後の広告が入ります</p>
+    </div>
+    <!-- ▼ここにシェア・保存ボタンエリア追加！ -->
+    <div style="margin-top: 20px;">
+      <button onclick="saveScreenshot()">スクショ保存</button>
+      <button onclick="shareOnTwitter()">Twitterでシェア</button>
+      <button onclick="shareOnLine()">LINEでシェア</button>
+      <button onclick="restart()">もう一度占う</button>
+    </div>
+  </div>
+
+  <!-- 必要なスクリプト -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <script>
+    function startFortune() {
+      const year = document.getElementById('year').value;
+      const month = document.getElementById('month').value;
+      const day = document.getElementById('day').value;
+      if (!year || !month || !day) {
+        alert('すべて入力してね！');
+        return;
+      }
+
+      document.getElementById('input-section').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+        showResult();
+      }, 3000);
+    }
+
+    function showResult() {
+      const jobs = [
+        { name: "戦士", description: "力と防御のエキスパート。仲間を守る盾となる。", voice: "オレがみんなを守ってみせる！さあ、共に戦おう！" },
+        { name: "魔法使い", description: "強力な魔法で敵を圧倒する知恵の使い手。", voice: "秘めたる力を解き放つ時...。いざ、魔法の嵐を！" },
+        { name: "盗賊", description: "俊敏さと頭脳で戦うトリックスター。", voice: "フフッ、オレについてこれるか？このスピード、見切れるかな？" },
+        { name: "賢者", description: "魔法と知識を極めた賢き導き手。", voice: "真理を知り、力を得る…それが賢者の道だ。" },
+        { name: "僧侶", description: "癒しと守護のスペシャリスト。仲間を支える存在。", voice: "あなたを癒しましょう。どうかご無事で。" },
+        { name: "旅芸人", description: "歌と踊りで士気を高めるムードメーカー。", voice: "さぁさ、楽しくいこうよ！冒険はこれからさ！" },
+        { name: "商人", description: "金と情報を武器にする知略の使い手。", voice: "商機を見逃すな！勝つためには知恵も必要さ。" },
+        { name: "魔物使い", description: "モンスターと心を通わせる不思議な存在。", voice: "ボクの仲間たちが力になるよ！さぁ行こう！" },
+        { name: "召喚士", description: "異界の力を呼び出す神秘の召喚者。", voice: "精霊たちよ、我が声に応えよ！" },
+        { name: "ドラゴン使い", description: "伝説の竜と共に戦う勇者。", voice: "オレとこの竜をなめるなよ？一緒に暴れてやる！" },
+        { name: "魔術騎士", description: "剣と魔法を操る万能戦士。", voice: "剣と魔法、両方極めてこそ真の力だ。" },
+        { name: "闘気の拳士", description: "気を操り肉体を極限まで鍛えた格闘家。", voice: "拳ひとつで世界を変える！それがオレだ！" },
+        { name: "策導士", description: "戦術と知略で戦場を制する頭脳派リーダー。", voice: "策は万全。後は我らの勝利を待つのみ！" },
+        { name: "幻獣使い", description: "幻の獣を操る伝説の使い手。", voice: "幻獣たちよ、今こそ力を貸して！" },
+        { name: "星詠み", description: "星の導きを読み解く運命の語り手。", voice: "星々が示す未来、あなたに伝えましょう。" },
+        { name: "魔王", description: "破壊と支配を司る闇の王。", voice: "世界はオレのものだ。抗うなら、滅びるのみ。" }
+      ];
+      const randomJob = jobs[Math.floor(Math.random() * jobs.length)];
+
+      document.getElementById('job-name').innerText = randomJob.name;
+      document.getElementById('job-description').innerText = randomJob.description;
+      document.getElementById('job-voice').innerText = '「' + randomJob.voice + '」';
+      document.getElementById('result-card').style.display = 'block';
+    }
+
+    function restart() {
+      document.getElementById('result-card').style.display = 'none';
+      document.getElementById('input-section').style.display = 'block';
+    }
+
+    function saveScreenshot() {
+      const target = document.getElementById('result-card');
+      html2canvas(target).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = '診断結果.png';
+        link.click();
+      });
+    }
+
+    function shareOnTwitter() {
+      const jobName = document.getElementById('job-name').innerText;
+      const text = encodeURIComponent(`【冒険者占い】あなたの職業は「${jobName}」だった！ #冒険者占い`);
+      const url = encodeURIComponent(location.href);
+      window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    }
+
+    function shareOnLine() {
+      const jobName = document.getElementById('job-name').innerText;
+      const text = encodeURIComponent(`【冒険者占い】あなたの職業は「${jobName}」だった！`);
+      const url = encodeURIComponent(location.href);
+      window.open(`https://social-plugins.line.me/lineit/share?text=${text}&url=${url}`, '_blank');
+    }
+
+  </script>
+</body>
+</html>
